@@ -135,5 +135,6 @@ int main(void)
     }
     free(head);
 
+    printf("g   ");
     return 0;
 }
