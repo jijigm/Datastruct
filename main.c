@@ -35,7 +35,7 @@ void initializeCustomer(Customer* customer, char* name, int id) {
 
 // 회원 등급 갱신
 void updateGrade(Customer* customer) {
-    if (customer->last_month_total < 3000000) {
+    if (customer->last_month_total < 300000) {
         customer->grade = FAMILY;
     }
     else if (customer->last_month_total < 700000) {
@@ -171,8 +171,8 @@ int main(void)
     init(head);
 
     // 파일에서 고객 정보 로드
-    customersFromFile(head, "파일 경로");   //구분자 (,)
-    //ID,이름,적립포인트,전월실적
+    customersFromFile(head, "C:\\Programing\\C_C++\\C\\DataStruct\\customers.txt");   //구분자 (,)
+                                            //ID,이름,적립포인트,전월실적
 
     while (1) {
         printf("ID 입력(종료하려면 0 입력) : ");
