@@ -54,7 +54,7 @@ void updateGrade(Customer* customer) {
 }
 
 // 회원 정보 설정 함수
-void setCustomer(Customer* customer, char* name, int id,unsigned int asset,
+void setCustomer(Customer* customer, char* name, int id, unsigned int asset,
     unsigned int reward_points, unsigned int last_month_total) {
     strcpy(customer->name, name);
     customer->id = id;
@@ -112,11 +112,11 @@ DListNode* findCustomerID(DListNode* head, int id) {
 }
 
 // 파일에서 회원 정보 읽어오기
-void customersFromFile(DListNode* head, const char* filename) {
+int customersFromFile(DListNode* head, const char* filename) {
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
         perror("파일 열기 실패");
-        return;
+        return 0;
     }
 
     char line[256];
@@ -146,16 +146,18 @@ void customersFromFile(DListNode* head, const char* filename) {
         if (token != NULL) last_month_total = (unsigned int)atoi(token);
 
         dinsert(head); // 새로운 노드를 리스트에 추가
-        setCustomer(&(head->rlink->data), name, id, asset , reward_points, last_month_total);
+        setCustomer(&(head->rlink->data), name, id, asset, reward_points, last_month_total);
     }
 
     fclose(file);
+    return 1;
 }
 // 회원 추가 함수
 void inputCustomer(DListNode* head) {
     int ch;
     char name[80];
     int id;
+    unsigned int asset;
     char filename[100];
     DListNode* duplicate = NULL;
 
@@ -177,8 +179,10 @@ void inputCustomer(DListNode* head) {
             // 중복된 경우 다시 입력을 받습니다.
             break;
         }
+        printf("보유 자산 입력: ");
+        scanf("%u", &asset);
         dinsert(head);
-        initializeCustomer(&(head->rlink->data), name, id);
+        setCustomer(&(head->rlink->data), name, id, asset, 0, 0);
         printf("--------------------ID추가 완료---------------------\n ");
         break;
     case 2:
@@ -186,10 +190,12 @@ void inputCustomer(DListNode* head) {
         printf("파일 경로를 입력하세요: ");
         scanf("%s", filename);
         // 파일에서 회원 정보 로드
-        customersFromFile(head, filename); // 구분자 (,)
-        // ID,이름,적립포인트,전월실적
-        printf("--------------------ID추가 완료---------------------\n ");
-        break;
+        if(!customersFromFile(head, filename)) break; // 구분자 (,)
+                                                    // ID,이름,적립포인트,전월실적
+        else{
+            printf("--------------------ID추가 완료---------------------\n ");
+            break;
+        }
     default:
         printf("잘못된 선택입니다. 다시 선택해 주세요.\n");
         break;
@@ -208,7 +214,7 @@ void deleteCustomer(DListNode* head) {
         target = findCustomerID(head, id);
         if (target == NULL) {
             printf("삭제할 회원을 찾을 수 없습니다.\n");
-            return;
+            continue;
         }
 
         target->llink->rlink = target->rlink;
@@ -235,16 +241,19 @@ void searchCustomer(DListNode* head) {
             printAllCustomers(head);
             break;
         case 2:
-            printf("\nID로 회원 검색 (종료하려면 0 입력) : ");
-            scanf("%d", &id);
-            if (id == 0)
-                break;
-            customerNode = findCustomerID(head, id);
-            if (customerNode == NULL) {
-                printf("아이디가 없습니다.\n");
-                continue;
+            while(1){
+                printf("\nID로 회원 검색 (종료하려면 0 입력) : ");
+                scanf("%d", &id);
+                if (id == 0)
+                    break;
+                customerNode = findCustomerID(head, id);
+                if (customerNode == NULL)
+                {
+                    printf("아이디가 없습니다.\n");
+                    return;
+                }
+                printUser(customerNode);
             }
-            printUser(customerNode);
             break;
         default:
             printf("잘못된 선택입니다. 다시 선택해 주세요.\n");
