@@ -32,6 +32,15 @@ void initializeCustomer(Customer* customer, char* name, int id) {
     customer->reward_points = 0;
     customer->last_month_total = 0;
 }
+// 고객 정보 설정 함수
+void setCustomer(Customer* customer, char* name, int id, int grade, 
+                        unsigned int reward_points, unsigned int last_month_total) {
+    strcpy(customer->name, name);
+    customer->id = id;
+    customer->grade = grade;
+    customer->reward_points = reward_points;
+    customer->last_month_total = last_month_total;
+}
 
 // 포인트 적립 함수
 void getRewardPoints(Customer* customer, int payment_amount) {
@@ -88,6 +97,43 @@ void printAllCustomers(DListNode* head) {
     }
 }
 
+// 파일에서 고객 정보 읽어오기
+void customersFromFile(DListNode* head, const char* filename) {
+    FILE* file = fopen(filename, "r");
+    if (file == NULL) {
+        perror("파일 열기 실패");
+        return;
+    }
+
+    char line[256];
+    while (fgets(line, sizeof(line), file)) {
+        char name[80];
+        int id, grade;
+        unsigned int reward_points, last_month_total;
+
+        // ','을 기준으로 구분
+        char* token = strtok(line, ",");
+        if (token != NULL) id = atoi(token);
+
+        token = strtok(NULL, ",");
+        if (token != NULL) strcpy(name, token);
+
+        token = strtok(NULL, ",");
+        if (token != NULL) grade = atoi(token);
+
+        token = strtok(NULL, ",");
+        if (token != NULL) reward_points = (unsigned int)atoi(token);
+
+        token = strtok(NULL, ",");
+        if (token != NULL) last_month_total = (unsigned int)atoi(token);
+
+        dinsert(head); // 새로운 노드를 리스트에 추가
+        setCustomer(&(head->rlink->data), name, id, grade, reward_points, last_month_total);
+    }
+
+    fclose(file);
+}
+
 int main(void)
 {
     char ch;
@@ -95,6 +141,11 @@ int main(void)
     int id;
     DListNode* head = (DListNode*)malloc(sizeof(DListNode));
     init(head);
+
+    // 파일에서 고객 정보 로드
+    customersFromFile(head, "파일 경로");   //구분자 (,)
+                                            //ID,이름,등급,적립포인트,전월실적
+
     while (1) {
         printf("ID 입력(종료하려면 0 입력) : ");
         scanf("%d", &id);
@@ -105,7 +156,6 @@ int main(void)
         printf("--------------------ID추가 완료---------------------\n ");
         dinsert(head);
         initializeCustomer(&(head->rlink->data), name, id);
-
     }
 
     DListNode* current = NULL;
