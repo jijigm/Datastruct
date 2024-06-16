@@ -149,6 +149,7 @@ void inputCustomer(DListNode* head){
     char name[80];
     int id;
     char filename[100];
+    DListNode *duplicate = NULL;
 
     printf("1. 회원 정보 직접 입력\n");
     printf("2. 파일에서 정보 입력\n");
@@ -162,15 +163,14 @@ void inputCustomer(DListNode* head){
             scanf("%s", name);
             printf("아이디 입력: ");
             scanf("%d", &id);
-            DListNode *duplicate = findCustomerID(head, id);
-            if (duplicate != NULL)
-            {
+            duplicate = findCustomerID(head, id);
+            if (duplicate != NULL){
                 printf("중복된 ID입니다. 다시 입력하세요.\n");
                 // 중복된 경우 다시 입력을 받습니다.
                 break;
             }
-            initializeCustomer(&(head->rlink->data), name, id);
             dinsert(head);
+            initializeCustomer(&(head->rlink->data), name, id);
             printf("--------------------ID추가 완료---------------------\n ");
             break;
         case 2:
@@ -190,13 +190,14 @@ void inputCustomer(DListNode* head){
 // 회원 삭제 함수
 void deleteCustomer(DListNode* head) {
     int id;
+    DListNode *target = NULL;
 
     while (1){
         printf("아이디 입력(종료: 0): ");
         scanf("%d", &id);
         if (id == 0)
             break;
-        DListNode *target = findCustomerID(head, id);
+        target = findCustomerID(head, id);
         if (target == NULL){
             printf("삭제할 회원을 찾을 수 없습니다.\n");
             return;
@@ -211,6 +212,7 @@ void deleteCustomer(DListNode* head) {
 void searchCustomer(DListNode* head){
     int ch;
     int id;
+    DListNode *customerNode =NULL;
 
     while (1){
         printf("1. 모든 회원 정보 출력\n");
@@ -229,12 +231,13 @@ void searchCustomer(DListNode* head){
             scanf("%d", &id);
             if (id == 0)
                 break;
-            DListNode *customerNode = findCustomerID(head, id);
+            customerNode = findCustomerID(head, id);
             if (customerNode == NULL){
                 printf("아이디가 없습니다.\n");
                 continue;
             }
             printUser(customerNode);
+            break;
         default:
             printf("잘못된 선택입니다. 다시 선택해 주세요.\n");
             break;
