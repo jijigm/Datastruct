@@ -145,6 +145,10 @@ void customersFromFile(DListNode* head, const char* filename) {
         // ','을 기준으로 구분
         char* token = strtok(line, ",");
         if (token != NULL) id = atoi(token);
+        DListNode* duplicate = findCustomerID(head, id);
+        if (duplicate != NULL) {
+            continue; // 중복된 경우 삽입 X
+        }
 
         token = strtok(NULL, ",");
         if (token != NULL) strcpy(name, token);
