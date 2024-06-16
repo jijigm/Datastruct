@@ -97,6 +97,19 @@ void printAllCustomers(DListNode* head) {
     }
 }
 
+// 고객 ID로 고객 정보를 탐색하는 함수
+DListNode* findCustomerID(DListNode* head, int id) {
+    DListNode* current = head->rlink;
+    while (current != head) {
+        if (current->data.id == id) {
+            return current;
+        }
+        current = current->rlink;
+    }
+    return NULL;
+}
+
+
 // 파일에서 고객 정보 읽어오기
 void customersFromFile(DListNode* head, const char* filename) {
     FILE* file = fopen(filename, "r");
@@ -151,6 +164,11 @@ int main(void)
         scanf("%d", &id);
         if (id == 0) break;
         getchar();
+        DListNode* duplicate = findCustomerID(head, id);
+        if (duplicate != NULL) {
+            printf("중복된 ID입니다. 다시 입력하세요.\n");
+            continue; // 중복된 경우 다시 입력을 받습니다.
+        }
         printf("이름 입력(종료하려면 end 입력) : ");
         scanf("%s", name);
         printf("--------------------ID추가 완료---------------------\n ");
