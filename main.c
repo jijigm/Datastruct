@@ -62,28 +62,6 @@ void setCustomer(Customer* customer, char* name, int id,
     updateGrade(customer);
 }
 
-// 포인트 적립 함수
-void getRewardPoints(Customer* customer, int payment_amount) {
-    int grade = customer->grade;
-    switch (grade) {
-    case FAMILY:
-        customer->reward_points += (int)(payment_amount * 0.01);    //unsigned int형에 daouble형 삽입 위한 (int)캐스팅
-        break;
-    case BEST:
-        customer->reward_points += (int)(payment_amount * 0.03);
-        break;
-    case GRAND:
-        customer->reward_points += (int)(payment_amount * 0.05);
-        break;
-    case VIP:
-        customer->reward_points += (int)(payment_amount * 0.08);
-        break;
-    case VVIP:
-        customer->reward_points += (int)(payment_amount * 0.10);
-        break;
-    }
-}
-
 // 문자열 등급 리턴 함수
 const char* getGrade(int grade) {
     switch (grade) {
