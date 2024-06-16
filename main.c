@@ -151,7 +151,7 @@ void inputCustomer(DListNode* head){
     char filename[100];
     DListNode *duplicate = NULL;
 
-    printf("1. 회원 정보 직접 입력\n");
+    printf("\n1. 회원 정보 직접 입력\n");
     printf("2. 파일에서 정보 입력\n");
     printf("메뉴 선택: ");
     scanf("%d", &ch);
@@ -193,7 +193,7 @@ void deleteCustomer(DListNode* head) {
     DListNode *target = NULL;
 
     while (1){
-        printf("아이디 입력(종료: 0): ");
+        printf("\n아이디 입력(종료: 0): ");
         scanf("%d", &id);
         if (id == 0)
             break;
@@ -215,7 +215,7 @@ void searchCustomer(DListNode* head){
     DListNode *customerNode =NULL;
 
     while (1){
-        printf("1. 모든 회원 정보 출력\n");
+        printf("\n1. 모든 회원 정보 출력\n");
         printf("2. 회원 정보 출력\n");
         printf("메뉴 선택(종료하려면 0 입력): ");
         scanf("%d", &ch);
