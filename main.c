@@ -9,17 +9,19 @@
 #define VIP 4
 #define VVIP 5
 
+// 고객 구조체
 typedef struct Customer {
-    char name[80];
-    int id;
-    int grade;
-    unsigned int reward_points;
-    unsigned int last_month_total;
+    char name[80];  //이름
+    int id;         //아이디
+    int grade;      //등급
+    unsigned int reward_points;     //적립 포인트
+    unsigned int last_month_total;  //전월 실적
 }Customer;
 
+// element 타입 설정
 #define ELEMENT_TYPE
 typedef struct Customer element;
-#include "LinkedList.h"
+#include "LinkedList.h" // 이중연결리스트 코드
 
 // 고객 정보 초기화 함수
 void initializeCustomer(Customer* customer, char* name, int id) {
@@ -35,7 +37,7 @@ void getRewardPoints(Customer* customer, int payment_amount) {
     int grade = customer->grade;
     switch (grade) {
     case FAMILY:
-        customer->reward_points += (int)(payment_amount * 0.01);
+        customer->reward_points += (int)(payment_amount * 0.01);    //unsigned int형에 daouble형 삽입 위한 (int)캐스팅
         break;
     case BEST:
         customer->reward_points += (int)(payment_amount * 0.03);
@@ -52,6 +54,7 @@ void getRewardPoints(Customer* customer, int payment_amount) {
     }
 }
 
+// 문자열 등급 리턴 함수
 const char* getGrade(int grade) {
     switch (grade) {
     case FAMILY: return "FAMILY";
@@ -61,7 +64,7 @@ const char* getGrade(int grade) {
     case VVIP: return "VVIP";
     }
 }
-//회원 정보 출력 함수
+// 회원 정보 출력 함수
 void printUser(DListNode* current) {
     Customer* user = &(current->data);
     printf("회원 아이디 : %d\n", user->id);
@@ -135,6 +138,5 @@ int main(void)
     }
     free(head);
 
-    printf("g   ");
     return 0;
 }
