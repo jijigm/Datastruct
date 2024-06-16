@@ -1,3 +1,4 @@
+// "main.c"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -79,7 +80,7 @@ void printAllCustomers(DListNode* head) {
     Customer* user = NULL;
     while (current != head) {
         user = &(current->data);
-        printf("ID: %d, Name: %s, Reward Points: %d, Grade: %s\n",
+        printf("ID: %d, 이름: %s, 적립 포인트: %d, 고객등급: %s\n",
             user->id, user->name,
             user->reward_points, getGrade(user->grade));
 
@@ -101,8 +102,10 @@ int main(void)
         getchar();
         printf("이름 입력(종료하려면 end 입력) : ");
         scanf("%s", name);
+        printf("--------------------ID추가 완료---------------------\n ");
         dinsert(head);
         initializeCustomer(&(head->rlink->data), name, id);
+
     }
 
     DListNode* current = NULL;
