@@ -10,7 +10,7 @@
 #define VIP 4
 #define VVIP 5
 
-// 고객 구조체
+// 회원 구조체
 typedef struct Customer {
     char name[80];  //이름
     int id;         //아이디
@@ -24,7 +24,7 @@ typedef struct Customer {
 typedef struct Customer element;
 #include "LinkedList.h" // 이중연결리스트 코드
 
-// 고객 정보 초기화 함수
+// 회원 정보 초기화 함수
 void initializeCustomer(Customer* customer, char* name, int id) {
     strcpy(customer->name, name);
     customer->id = id;
@@ -51,7 +51,7 @@ void updateGrade(Customer* customer) {
         customer->grade = VVIP;
 }
 
-// 고객 정보 설정 함수
+// 회원 정보 설정 함수
 void setCustomer(Customer* customer, char* name, int id,
     unsigned int reward_points, unsigned int last_month_total) {
     strcpy(customer->name, name);
@@ -109,14 +109,14 @@ void printAllCustomers(DListNode* head) {
     Customer* user = NULL;
     while (current != head) {
         user = &(current->data);
-        printf("ID: %d, 이름: %s, 적립 포인트: %d, 고객등급: %s\n",
+        printf("ID: %d, 이름: %s, 적립 포인트: %d, 회원등급: %s\n",
             user->id, user->name,
             user->reward_points, getGrade(user->grade));
         current = current->rlink;
     }
 }
 
-// 고객 ID로 고객 정보를 탐색하는 함수
+// 회원 ID로 회원 정보를 탐색하는 함수
 DListNode* findCustomerID(DListNode* head, int id) {
     DListNode* current = head->rlink;
     while (current != head) {
@@ -128,7 +128,7 @@ DListNode* findCustomerID(DListNode* head, int id) {
     return NULL;
 }
 
-// 파일에서 고객 정보 읽어오기
+// 파일에서 회원 정보 읽어오기
 void customersFromFile(DListNode* head, const char* filename) {
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
@@ -165,35 +165,96 @@ void customersFromFile(DListNode* head, const char* filename) {
 
     fclose(file);
 }
+// 회원 추가 함수
+void inputCustomer(DListNode* head){
+    int ch;
+    char name[80];
+    int id;
+    char filename[100];
+
+    printf("1. 회원 정보 직접 입력\n");
+    printf("2. 파일에서 정보 입력\n");
+    printf("메뉴 선택: ");
+    scanf("%d", &ch);
+    getchar(); // 버퍼 비우기
+    switch (ch) {
+        case 1:
+            // 회원 정보 직접 입력
+            printf("이름 입력: ");
+            scanf("%s", name);
+            printf("아이디 입력: ");
+            scanf("%d", &id);
+            DListNode *duplicate = findCustomerID(head, id);
+            if (duplicate != NULL)
+            {
+                printf("중복된 ID입니다. 다시 입력하세요.\n");
+                // 중복된 경우 다시 입력을 받습니다.
+                break;
+            }
+            initializeCustomer(&(head->rlink->data), name, id);
+            dinsert(head);
+            printf("--------------------ID추가 완료---------------------\n ");
+            break;
+        case 2:
+            // 파일 경로 입력 받기
+            printf("파일 경로를 입력하세요: ");
+            scanf("%s", filename);
+            // 파일에서 회원 정보 로드
+            customersFromFile(head, filename); // 구분자 (,)
+                                               // ID,이름,적립포인트,전월실적
+            printf("--------------------ID추가 완료---------------------\n ");
+            break;
+        default:
+            printf("잘못된 선택입니다.\n");
+            break;
+    }
+}
+// 회원 삭제 함수
+void deleteCustomer(DListNode* head) {
+    int id;
+    printf("아이디 입력: ");
+            scanf("%d", &id);
+    DListNode* target = findCustomerID(head,id);
+    if (target == NULL) {
+        printf("삭제할 회원을 찾을 수 없습니다.\n");
+        return;
+    }
+
+    target->llink->rlink = target->rlink;
+    target->rlink->llink = target->llink;
+    free(target);
+    printf("회원 (ID: %d)이(가) 삭제되었습니다.\n", id);
+}
 
 int main(void)
 {
-    char ch;
-    char name[80];
+    int ch;
     int id;
     DListNode* head = (DListNode*)malloc(sizeof(DListNode));
     init(head);
 
-    // 파일에서 고객 정보 로드
-    customersFromFile(head, "C:\\Programing\\C_C++\\C\\DataStruct\\customers.txt");   //구분자 (,)
-                                            //ID,이름,적립포인트,전월실적
+    do {
+        printf("\n1. 회원 추가\n");
+        printf("2. 회원 삭제\n");
+        printf("메뉴 선택 (종료: 0): ");
+        scanf("%d", &ch);
+        getchar(); // 버퍼 비우기
 
-    while (1) {
-        printf("ID 입력(종료하려면 0 입력) : ");
-        scanf("%d", &id);
-        if (id == 0) break;
-        getchar();
-        DListNode* duplicate = findCustomerID(head, id);
-        if (duplicate != NULL) {
-            printf("중복된 ID입니다. 다시 입력하세요.\n");
-            continue; // 중복된 경우 다시 입력을 받습니다.
+        switch (ch) {
+            case 1:
+                inputCustomer(head);
+                break;
+            case 2:
+                deleteCustomer(head);
+                break;
+            case 0:
+                printf("프로그램을 종료합니다.\n");
+                break;
+            default:
+                printf("잘못된 선택입니다. 다시 선택해 주세요.\n");
+                break;
         }
-        printf("이름 입력(종료하려면 end 입력) : ");
-        scanf("%s", name);
-        printf("--------------------ID추가 완료---------------------\n ");
-        dinsert(head);
-        initializeCustomer(&(head->rlink->data), name, id);
-    }
+    } while (ch != 0);
 
     DListNode *current = NULL;
     current = head->rlink;
