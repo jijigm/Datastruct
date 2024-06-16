@@ -195,26 +195,22 @@ int main(void)
         initializeCustomer(&(head->rlink->data), name, id);
     }
 
-    DListNode* current = NULL;
+    DListNode *current = NULL;
     current = head->rlink;
     printAllCustomers(head);
     getchar();
-    do {
-        printf("\n명령어를 입력하시오(<, >, q): ");
-        ch = getchar();
-        if (ch == '<') {
-            current = current->llink;
-            if (current == head)
-                current = current->llink;
+    while (1){
+        printf("\nID로 회원 검색 (종료하려면 0 입력) : ");
+        scanf("%d", &id);
+        if (id == 0)
+            break;
+        DListNode *customerNode = findCustomerID(head, id);
+        if (customerNode == NULL){
+            printf("아이디가 없습니다.\n");
+            continue;
         }
-        else if (ch == '>') {
-            current = current->rlink;
-            if (current == head)
-                current = current->rlink;
-        }
-        printUser(current);
-        getchar();
-    } while (ch != 'q');
+        printUser(customerNode);
+    }
 
     printUser(current);
     printAllCustomers(head);
