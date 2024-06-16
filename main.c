@@ -183,37 +183,74 @@ void inputCustomer(DListNode* head){
             printf("--------------------ID추가 완료---------------------\n ");
             break;
         default:
-            printf("잘못된 선택입니다.\n");
+            printf("잘못된 선택입니다. 다시 선택해 주세요.\n");
             break;
     }
 }
 // 회원 삭제 함수
 void deleteCustomer(DListNode* head) {
     int id;
-    printf("아이디 입력: ");
-            scanf("%d", &id);
-    DListNode* target = findCustomerID(head,id);
-    if (target == NULL) {
-        printf("삭제할 회원을 찾을 수 없습니다.\n");
-        return;
+
+    while (1){
+        printf("아이디 입력(종료: 0): ");
+        scanf("%d", &id);
+        if (id == 0)
+            break;
+        DListNode *target = findCustomerID(head, id);
+        if (target == NULL){
+            printf("삭제할 회원을 찾을 수 없습니다.\n");
+            return;
+        }
+
+        target->llink->rlink = target->rlink;
+        target->rlink->llink = target->llink;
+        free(target);
+        printf("회원 (ID: %d)이(가) 삭제되었습니다.\n", id);
     }
-
-    target->llink->rlink = target->rlink;
-    target->rlink->llink = target->llink;
-    free(target);
-    printf("회원 (ID: %d)이(가) 삭제되었습니다.\n", id);
 }
-
-int main(void)
-{
+void searchCustomer(DListNode* head){
     int ch;
     int id;
+
+    while (1){
+        printf("1. 모든 회원 정보 출력\n");
+        printf("2. 회원 정보 출력\n");
+        printf("메뉴 선택(종료하려면 0 입력): ");
+        scanf("%d", &ch);
+        getchar(); // 버퍼 비우기
+        if (ch == 0)
+            break;
+        switch (ch){
+        case 1:
+            printAllCustomers(head);
+            break;
+        case 2:
+            printf("\nID로 회원 검색 (종료하려면 0 입력) : ");
+            scanf("%d", &id);
+            if (id == 0)
+                break;
+            DListNode *customerNode = findCustomerID(head, id);
+            if (customerNode == NULL){
+                printf("아이디가 없습니다.\n");
+                continue;
+            }
+            printUser(customerNode);
+        default:
+            printf("잘못된 선택입니다. 다시 선택해 주세요.\n");
+            break;
+        }
+    }
+}
+
+int main(void){
+    int ch;
+
     DListNode* head = (DListNode*)malloc(sizeof(DListNode));
     init(head);
-
     do {
         printf("\n1. 회원 추가\n");
         printf("2. 회원 삭제\n");
+        printf("3. 회원 검색\n");
         printf("메뉴 선택 (종료: 0): ");
         scanf("%d", &ch);
         getchar(); // 버퍼 비우기
@@ -225,6 +262,9 @@ int main(void)
             case 2:
                 deleteCustomer(head);
                 break;
+            case 3:
+                searchCustomer(head);
+                break;
             case 0:
                 printf("프로그램을 종료합니다.\n");
                 break;
@@ -233,26 +273,6 @@ int main(void)
                 break;
         }
     } while (ch != 0);
-
-    DListNode *current = NULL;
-    current = head->rlink;
-    printAllCustomers(head);
-    getchar();
-    while (1){
-        printf("\nID로 회원 검색 (종료하려면 0 입력) : ");
-        scanf("%d", &id);
-        if (id == 0)
-            break;
-        DListNode *customerNode = findCustomerID(head, id);
-        if (customerNode == NULL){
-            printf("아이디가 없습니다.\n");
-            continue;
-        }
-        printUser(customerNode);
-    }
-
-    printUser(current);
-    printAllCustomers(head);
 
     // 동적 메모리 해제 코드
     DListNode* temp = head->rlink;
