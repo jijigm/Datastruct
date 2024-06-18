@@ -111,6 +111,7 @@ void printAllCustomers(DListNode* head) {
 // 회원 ID로 회원 정보를 탐색하는 함수
 DListNode* findCustomerID(DListNode* head, int id) {
     DListNode* current = head->rlink;
+    // 리스트 순회하며 탐색
     while (current != head) {
         if (current->data.id == id) {
             return current;
@@ -168,8 +169,7 @@ int customersFromFile(DListNode* head, const char* filename) {
 }
 
 // 회원 추가 함수
-void inputCustomer(DListNode* head)
-{
+void inputCustomer(DListNode* head){
     int ch;
     char name[80];
     int id;
@@ -228,16 +228,18 @@ void deleteCustomer(DListNode* head) {
     int id;
     DListNode* target = NULL;
 
-    while (1) {
+    while (1) { // 반복 삭제
         printf("\n아이디 입력(이전 메뉴: 0): ");
         scanf("%d", &id);
         if (id == 0)
             break;
+        //삭제할 회원을 리스트에서 찾기
         target = findCustomerID(head, id);
         if (target == NULL) {
             printf("삭제할 회원을 찾을 수 없습니다.\n");
             continue;
         }
+        //찾으면 회원 정보 출력하고 리스트에서 삭제
         printUser(target);
         target->llink->rlink = target->rlink;
         target->rlink->llink = target->llink;
@@ -287,6 +289,7 @@ void searchCustomer(DListNode* head) {
 int countCustomers(DListNode* head) {
     int count = 0;
     DListNode* current = head->rlink;
+    // 리스트 순회하며 count 증가
     while (current != head) {
         count++;
         current = current->rlink;
@@ -296,50 +299,45 @@ int countCustomers(DListNode* head) {
 
 // 상위 1% 회원 추출 출력 함수
 void printTop1PercentCustomers(DListNode* head) {
+    // 전체 회원 수를 계산하고 상위 1%의 회원 수를 결정합니다.
     int totalCustomers = countCustomers(head);
-    int top1PercentCount = (int)(totalCustomers * 0.01);
+    int top1PercentCount = (totalCustomers * 0.01);
     if (top1PercentCount == 0) top1PercentCount = 1;
 
-    // 힙 자료구조 정의
+    // 힙 자료구조 정의: Customer 포인터를 저장하는 배열을 동적으로 할당합니다.
     Customer** heap = (Customer**)malloc(sizeof(Customer*) * totalCustomers);
     int heapSize = 0;
 
-    // 리스트를 순회하며 힙에 삽입
-    DListNode* current = head->rlink;
-    while (current != head) {
-        // 새로운 요소를 힙에 삽입
+    // 이중 연결 리스트를 순회하며 각 노드를 힙에 삽입합니다.
+    // 삽입 시 상향식으로 힙의 성질을 유지하여 최대 힙을 만듭니다.
+    for (DListNode* current = head->rlink; current != head; current = current->rlink) {
         heap[heapSize] = &(current->data);
-        int i = heapSize;
-        heapSize++;
-
-        // 상향식으로 힙의 성질을 유지
+        int i = heapSize++;
         while (i > 0 && heap[i]->grade > heap[(i - 1) / 2]->grade) {
             Customer* temp = heap[i];
             heap[i] = heap[(i - 1) / 2];
             heap[(i - 1) / 2] = temp;
             i = (i - 1) / 2;
         }
-        current = current->rlink;
     }
 
-    // 상위 1% 회원 출력
-    printf("\n상위 1 %% 회원 목록\n");
+    // 상위 1% 회원을 출력합니다.
+    printf("\n상위 1%% 회원 목록\n");
     printf("-------------------------------------------------------------------\n");
     printf("%-10s %-20s %-10s %-15s %-10s\n", "ID", "이름", "자산", "적립 포인트", "회원등급");
     printf("-------------------------------------------------------------------\n");
+
     for (int i = 0; i < top1PercentCount; i++) {
         if (heapSize == 0) break;
 
-        // 루트 요소(최대값)를 출력
+        // 가장 높은 등급의 회원을 출력합니다.
         Customer* topCustomer = heap[0];
         printf("%-10d %-20s %-10d %-15d %-10s\n",
             topCustomer->id, topCustomer->name, topCustomer->asset,
             topCustomer->reward_points, getGrade(topCustomer->grade));
 
-        // 마지막 요소를 루트로 이동하고, 힙 크기 감소
+        // 마지막 요소를 루트로 이동시킵니다.
         heap[0] = heap[--heapSize];
-
-        // 하향식으로 힙의 성질을 유지
         int parent = 0;
         while (1) {
             int leftChild = 2 * parent + 1;
@@ -354,6 +352,7 @@ void printTop1PercentCustomers(DListNode* head) {
             }
             if (largest == parent) break;
 
+            // 부모와 가장 큰 자식을 교환합니다.
             Customer* temp = heap[parent];
             heap[parent] = heap[largest];
             heap[largest] = temp;
@@ -361,7 +360,7 @@ void printTop1PercentCustomers(DListNode* head) {
         }
     }
 
-    // 메모리 해제
+    // 동적으로 할당한 힙 메모리를 해제합니다.
     free(heap);
 }
 
