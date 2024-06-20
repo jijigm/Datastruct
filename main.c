@@ -1,4 +1,6 @@
-#define _CRT_SECURE_NO_WARNINGS
+// "main.c"
+// 카드사 회원 관리 프로그램
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -123,8 +125,8 @@ DListNode* findCustomerID(DListNode* head, int id) {
 
 // 파일에서 회원 정보 읽어오기
 int customersFromFile(DListNode* head, const char* filename) {
-    FILE* file = fopen(filename, "r");
-    if (file == NULL) {
+    FILE* file = fopen(filename, "r");  // 파일 내용: ID,이름,보유자산,적립포인트,전월실적(정수,문자열,정수,정수,정수)
+    if (file == NULL) {                 // 인코딩: ANSI
         perror("파일 열기 실패");
         return 0;
     }
@@ -212,7 +214,7 @@ void inputCustomer(DListNode* head){
         // 파일에서 회원 정보 로드
         if (!customersFromFile(head, filename))
             break; // 구분자 (,)
-        // ID,이름,적립포인트,전월실적
+            // ID,이름,보유자산,적립포인트,전월실적
         else {
             printf("\n--------------------ID추가 완료---------------------\n ");
             break;
@@ -313,7 +315,7 @@ void printTop1PercentCustomers(DListNode* head) {
     for (DListNode* current = head->rlink; current != head; current = current->rlink) {
         heap[heapSize] = &(current->data);
         int i = heapSize++;
-        while (i > 0 && heap[i]->grade > heap[(i - 1) / 2]->grade) {
+        while (i > 0 && heap[i]->asset > heap[(i - 1) / 2]->asset) {
             Customer* temp = heap[i];
             heap[i] = heap[(i - 1) / 2];
             heap[(i - 1) / 2] = temp;
@@ -344,10 +346,10 @@ void printTop1PercentCustomers(DListNode* head) {
             int rightChild = 2 * parent + 2;
             int largest = parent;
 
-            if (leftChild < heapSize && heap[leftChild]->grade > heap[largest]->grade) {
+            if (leftChild < heapSize && heap[leftChild]->asset > heap[largest]->asset) {
                 largest = leftChild;
             }
-            if (rightChild < heapSize && heap[rightChild]->grade > heap[largest]->grade) {
+            if (rightChild < heapSize && heap[rightChild]->asset > heap[largest]->asset) {
                 largest = rightChild;
             }
             if (largest == parent) break;
@@ -380,16 +382,16 @@ int main(void) {
 
         switch (ch) {
         case 1:
-            inputCustomer(head);
+            inputCustomer(head);    //회원 추가
             break;
         case 2:
-            deleteCustomer(head);
+            deleteCustomer(head);   //회원 삭제
             break;
         case 3:
-            searchCustomer(head);
+            searchCustomer(head);   //회원 검색
             break;
         case 4:
-            printTop1PercentCustomers(head);
+            printTop1PercentCustomers(head); //상위 회원 출력
             break;
         case 0:
             printf("프로그램을 종료합니다.\n");
