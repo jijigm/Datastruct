@@ -1,6 +1,5 @@
 // "main.c"
 // 카드사 회원 관리 프로그램
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -93,19 +92,20 @@ void printUser(DListNode* current) {
     printf("%-15s: %d\n", "보유 자산", user->asset);
     printf("%-15s: %s\n", "회원 등급", getGrade(user->grade));
     printf("%-15s: %d\n", "보유 포인트", user->reward_points);
+    printf("%-15s: %d\n", "전월 실적", user->last_month_total);
 }
 
 // 모든 회원 출력
 void printAllCustomers(DListNode* head) {
     DListNode* current = head->rlink;
     Customer* user = NULL;
-    printf("%-10s %-20s %-10s %-15s %-10s\n", "ID", "이름", "자산", "적립 포인트", "회원등급");
-    printf("--------------------------------------------------------------------\n");
+    printf("%-10s %-20s %-15s %-15s %-10s %-10s\n", "ID", "이름", "자산", "적립 포인트", "회원등급", "전월실적");
+    printf("------------------------------------------------------------------------------------\n");
     while (current != head) {
         user = &(current->data);
-        printf("%-10d %-20s %-10d %-15d %-10s\n",
+        printf("%-10d %-20s %-15d %-15d %-10s %-10d\n",
             user->id, user->name, user->asset,
-            user->reward_points, getGrade(user->grade));
+            user->reward_points, getGrade(user->grade), user->last_month_total);
         current = current->rlink;
     }
 }
@@ -311,11 +311,11 @@ void printTop1PercentCustomers(DListNode* head) {
     int heapSize = 0;
 
     // 이중 연결 리스트를 순회하며 각 노드를 힙에 삽입합니다.
-    // 삽입 시 상향식으로 힙의 성질을 유지하여 최대 힙을 만듭니다.
+    // 우선순위큐에 전월 실적을 기준으로 삽입합니다.
     for (DListNode* current = head->rlink; current != head; current = current->rlink) {
         heap[heapSize] = &(current->data);
         int i = heapSize++;
-        while (i > 0 && heap[i]->asset > heap[(i - 1) / 2]->asset) {
+        while (i > 0 && heap[i]->last_month_total > heap[(i - 1) / 2]->last_month_total) {
             Customer* temp = heap[i];
             heap[i] = heap[(i - 1) / 2];
             heap[(i - 1) / 2] = temp;
@@ -325,18 +325,18 @@ void printTop1PercentCustomers(DListNode* head) {
 
     // 상위 1% 회원을 출력합니다.
     printf("\n상위 1%% 회원 목록\n");
-    printf("-------------------------------------------------------------------\n");
-    printf("%-10s %-20s %-10s %-15s %-10s\n", "ID", "이름", "자산", "적립 포인트", "회원등급");
-    printf("-------------------------------------------------------------------\n");
+    printf("---------------------------------------------------------------------------------------\n");
+    printf("%-10s %-20s %-15s %-15s %-10s %-10s\n", "ID", "이름", "자산", "적립 포인트", "회원등급", "전월실적");
+    printf("---------------------------------------------------------------------------------------\n");
 
     for (int i = 0; i < top1PercentCount; i++) {
         if (heapSize == 0) break;
 
         // 가장 높은 등급의 회원을 출력합니다.
         Customer* topCustomer = heap[0];
-        printf("%-10d %-20s %-10d %-15d %-10s\n",
+        printf("%-10d %-20s %-15d %-15d %-10s %-10d\n",
             topCustomer->id, topCustomer->name, topCustomer->asset,
-            topCustomer->reward_points, getGrade(topCustomer->grade));
+            topCustomer->reward_points, getGrade(topCustomer->grade),topCustomer->last_month_total);
 
         // 마지막 요소를 루트로 이동시킵니다.
         heap[0] = heap[--heapSize];
@@ -346,10 +346,10 @@ void printTop1PercentCustomers(DListNode* head) {
             int rightChild = 2 * parent + 2;
             int largest = parent;
 
-            if (leftChild < heapSize && heap[leftChild]->asset > heap[largest]->asset) {
+            if (leftChild < heapSize && heap[leftChild]->last_month_total > heap[largest]->last_month_total) {
                 largest = leftChild;
             }
-            if (rightChild < heapSize && heap[rightChild]->asset > heap[largest]->asset) {
+            if (rightChild < heapSize && heap[rightChild]->last_month_total > heap[largest]->last_month_total) {
                 largest = rightChild;
             }
             if (largest == parent) break;
